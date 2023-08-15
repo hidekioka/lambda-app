@@ -1,0 +1,20 @@
+# https://www.artillery.io/ - scale tests
+
+config:
+  # DO NOT FINISH WITH /
+  target: https://gbzkp45hxkixo4hwp3ohhbrkie0qdnfo.lambda-url.sa-east-1.on.aws
+  timeout: 60
+  phases:
+    - duration: 30
+      arrivalRate: 1
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 50
+      name: Spike phase
+scenarios:
+  - flow:
+      - loop:
+          - get:
+              url: "/"
+        count: 1
