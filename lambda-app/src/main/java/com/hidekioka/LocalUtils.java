@@ -1,7 +1,9 @@
 package com.hidekioka;
 
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,6 +15,20 @@ class LocalUtils {
             ".com:5432/postgres";
     static final String DEFAULT_USER = "postgres";
     static final String DEFAULT_PASSWORD = "";
+    static String version = "";
+
+    public static String getApplicationVersion() {
+        if (version.isEmpty()) {
+            try {
+                Properties properties = new Properties();
+                properties.load(LocalUtils.class.getClassLoader().getResourceAsStream("application.properties"));
+                version = properties.getProperty("app.version");
+            } catch (IOException e) {
+                // Could not load version
+            }
+        }
+        return version;
+    }
 
     private LocalUtils() {
         throw new IllegalStateException("Utility class");
@@ -24,6 +40,15 @@ class LocalUtils {
 
     public static String textWithVersion(String version, String text) {
         return "[" + version + "] " + LINE_BREAK + text;
+    }
+
+    public static APIGatewayProxyResponseEvent buildResponse() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("X-Custom-Header", "application/json");
+
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent().withHeaders(headers);
+        return response;
     }
 
     public static void removeDB(String table) throws LambdaException {
@@ -90,14 +115,18 @@ class LocalUtils {
         return resultList;
     }
 
-    public static void insertDB(String table, Object... valuesInOrder) throws LambdaException {
+    public static void insertDB(String table, Map<String, Object> params) throws LambdaException {
         Connection con = null;
         Statement stmt = null;
         ResultSet rs = null;
         try {
             con = LocalUtils.connect();
             stmt = con.createStatement();
-            stmt.executeUpdate("insert into text (" + table + ") " + "values ('" + Arrays.stream(valuesInOrder).map(Object::toString).collect(Collectors.joining(",")) + "')");
+            String keys = params.entrySet().stream()
+                    .map(Map.Entry::getKey).collect(Collectors.joining(","));
+            String values = params.entrySet().stream()
+                    .map(a -> a.getValue().toString()).collect(Collectors.joining(","));
+            stmt.executeUpdate("insert into " + table + " ( " + keys + " ) values ('" + values + "')");
 
         } catch (SQLException e) {
             e.printStackTrace();
