@@ -23,7 +23,7 @@ public class NoteFunction {
             getNoteService().create(input.getQueryStringParameters().get("text"));
             String body =
 
-                    String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + "\", \"message\": " +
+                    String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + ", \"message\": " +
                             "\"" + "Created" + "\"}");
 
             return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body);
@@ -38,7 +38,7 @@ public class NoteFunction {
         try {
             String functionReturnString = getNoteService().findAll();
             String body =
-                    String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + "\"message\": " + functionReturnString);
+                    String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + ", \"message\": " + functionReturnString + "}");
 
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
         } catch (LambdaException e) {
@@ -56,7 +56,7 @@ public class NoteFunction {
         try {
             getNoteService().remove();
             String body =
-                    String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + "\"message\": \"" +
+                    String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + ", \"message\": \"" +
                             "Removed" + "\"}");
 
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);

@@ -30,3 +30,4 @@ target/classes/META-INF/maven/com.hidekioka/lambda-app/pom.xml
 target/classes/META-INF/maven/com.hidekioka/lambda-app/pom.properties
 .project
 .classpath
+lambda-app/target*

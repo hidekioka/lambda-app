@@ -1,6 +1,8 @@
 package com.hidekioka;
 
 import dagger.Module;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -8,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Module
 class NoteService {
@@ -21,8 +24,11 @@ class NoteService {
 
     public String findAll() throws LambdaException {
         List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME);
-        return resultList.toString();//.stream().map(a -> a.get("Note").toString()).collect(Collectors.joining(", " +
-        // LocalUtils.LINE_BREAK));
+        JSONArray jsonArray = new JSONArray();
+        for(Map<String, Object> it: resultList){
+            jsonArray.put(it);
+        }
+        return jsonArray.toString();
     }
 
     public void create(String text) throws LambdaException {
