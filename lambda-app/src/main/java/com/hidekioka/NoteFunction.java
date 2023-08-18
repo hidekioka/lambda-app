@@ -28,7 +28,7 @@ public class NoteFunction {
 
             return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body);
         } catch (LambdaException e) {
-            String body = String.format("{ \"message\": \"" + e.getMessage());
+            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
             return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
     }
@@ -42,16 +42,16 @@ public class NoteFunction {
 
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
         } catch (LambdaException e) {
-            String body = String.format("{ \"message\": \"" + e.getMessage());
+            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
             return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
     }
 
-    public APIGatewayProxyResponseEvent delete() throws LambdaException {
-        return remove();
+    public APIGatewayProxyResponseEvent delete(final APIGatewayProxyRequestEvent input, final Context context) throws LambdaException {
+        return remove(input, context);
     }
 
-    public APIGatewayProxyResponseEvent remove() {
+    public APIGatewayProxyResponseEvent remove(final APIGatewayProxyRequestEvent input, final Context context) {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
         try {
             getNoteService().remove();
@@ -61,7 +61,7 @@ public class NoteFunction {
 
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
         } catch (LambdaException e) {
-            String body = String.format("{ \"message\": \"" + e.getMessage());
+            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
             return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
     }

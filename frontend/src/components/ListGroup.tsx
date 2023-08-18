@@ -32,6 +32,7 @@ function ListGroup({ notes, heading, onSelectItem }: Props) {
             onClick={() => {
               setSelectedIndex(index);
               onSelectItem(note.text);
+              onSelectItem(note.id.toString());
             }}
           >
             {" "}
