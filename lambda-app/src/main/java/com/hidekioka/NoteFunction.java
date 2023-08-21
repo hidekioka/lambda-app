@@ -23,7 +23,7 @@ public class NoteFunction {
             getNoteService().create(input.getQueryStringParameters().get("text"));
             String body =
 
-                    String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + ", \"message\": " +
+                    String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + "\", \"message\": " +
                             "\"" + "Created" + "\"}");
 
             return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body);
