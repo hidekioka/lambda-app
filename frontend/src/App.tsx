@@ -19,9 +19,9 @@ function App() {
     type: "success",
   });
 
-  // React.useEffect(() => {
-  //   loadNotes(false);
-  // });
+  React.useEffect(() => {
+    loadNotes(true);
+  }, []);
   const loadNotes = (mainLoad = true) => {
     // main load will trigger loading screen and alert, used as false when after creating or deleting
     if (mainLoad) {
@@ -94,6 +94,12 @@ function App() {
         </div>
       ) : (
         <>
+          <p>
+            <i
+              className="bi bi-alarm-fill text-warning"
+              style={{ fontSize: 50 }}
+            ></i>
+          </p>
           <Alert show={alert.show}>
             {alert.type === "success" ? "Success" : "Error"}: {alert.message}
           </Alert>
