@@ -1,8 +1,15 @@
 .btn-group {
   padding: 10px;
 }
-.main-list {
+.list-content {
   padding: 10px;
+  text-align: center;
+}
+
+.btn-group {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, 0%);
 }
 
 .loader-container {

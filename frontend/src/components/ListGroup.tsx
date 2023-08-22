@@ -12,15 +12,16 @@ import { useState } from "react";
 
 function ListGroup({ notes, heading, onSelectItem }: Props) {
   // or props: Props and all call will be made like props.item
-  const noItemsMessageAnd = notes.length === 0 && <p>No items found</p>;
+  const noItemsMessageAnd = notes.length === 0 && (
+    <li className="list-group-item">No items found</li>
+  );
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
   return (
     <div className="main-list">
-      <h1>{heading}</h1>
-      {noItemsMessageAnd}
+      <h1 className="list-header">{heading}</h1>
       <ul className="list-group">
-        {" "}
+        {noItemsMessageAnd}
         {notes.map((note, index) => (
           <li
             className={

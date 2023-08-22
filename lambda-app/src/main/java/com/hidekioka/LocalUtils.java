@@ -64,7 +64,8 @@ class LocalUtils {
         try {
             con = LocalUtils.connect();
             stmt = con.createStatement();
-            stmt.executeUpdate("delete from " + table + " where 1=1 and " + whereClause);
+            String deleteClause = "delete from " + table + " where 1=1 and " + whereClause;
+            stmt.executeUpdate(deleteClause);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new LambdaException(e.getMessage(), e);

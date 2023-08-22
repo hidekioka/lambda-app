@@ -2,7 +2,6 @@ package com.hidekioka;
 
 import dagger.Module;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
@@ -10,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Module
 class NoteService {
@@ -25,7 +23,7 @@ class NoteService {
     public String findAll() throws LambdaException {
         List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME);
         JSONArray jsonArray = new JSONArray();
-        for(Map<String, Object> it: resultList){
+        for (Map<String, Object> it : resultList) {
             jsonArray.put(it);
         }
         return jsonArray.toString();
@@ -40,8 +38,12 @@ class NoteService {
         LocalUtils.insertDB(TABLE_NAME, map);
     }
 
-    public void remove() throws LambdaException {
-        LocalUtils.removeDB(TABLE_NAME);
+    public void remove(String selectedId) throws LambdaException {
+        if (selectedId != null) {
+            LocalUtils.removeDB(TABLE_NAME, " id = " + selectedId);
+        } else {
+            LocalUtils.removeDB(TABLE_NAME);
+        }
     }
 
 }

@@ -53,8 +53,11 @@ public class NoteFunction {
 
     public APIGatewayProxyResponseEvent remove(final APIGatewayProxyRequestEvent input, final Context context) {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
+        String selectedId = (input == null || input.getQueryStringParameters() == null) ? null : input.getQueryStringParameters().get(
+                "id");
+        LocalUtils.logWithClass(this.getClass().toString(), context.getLogger(), selectedId);
         try {
-            getNoteService().remove();
+            getNoteService().remove(selectedId);
             String body =
                     String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + ", \"message\": \"" +
                             "Removed" + "\"}");
