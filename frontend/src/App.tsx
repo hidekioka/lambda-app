@@ -1,40 +1,43 @@
 import ListGroup from "./components/ListGroup";
 import Alert from "./components/Alert";
 import Button from "./components/Button";
-import Form from "./components/Form";
 import Modal from "./components/Modal";
-import { useState, useEffect } from "react";
+import ModalButton from "./components/ModalButton";
+import React from "react";
 import "./App.css";
 
 function App() {
   const handleSelectItem = (item: string) => {
     console.log(item);
   };
-  const [loading, setLoading] = useState(false);
-  const [notes, setNotes] = useState([]);
-  const [showSucessAlert, setShowSucessAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("Something went wrong");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [notes, setNotes] = React.useState([]);
+  const [alert, setAlert] = React.useState({
+    message: "",
+    show: false,
+    type: "success",
+  });
 
-  const loadNotes = () => {
-    setLoading(true);
+  const loadNotes = (mainLoad = true) => {
+    // main load will trigger loading screen and alert, used as false when after creating or deleting
+    if (mainLoad) {
+      setLoading(true);
+    }
     fetch(
       "https://nkq7v0s6o2.execute-api.sa-east-1.amazonaws.com/default/web-notes-load"
     )
       .then((res) => res.json())
       .then((data) => {
         setNotes(data.message);
-        setLoading(false);
-        setShowSucessAlert(true);
-        setShowErrorAlert(false);
-        setSuccessMessage("Load");
+        if (mainLoad) {
+          setLoading(false);
+          setAlert({ message: "Load", show: true, type: "success" });
+        }
       })
       .catch((err) => {
         console.log(err.message);
         setLoading(false);
-        setShowErrorAlert(false);
-        setErrorMessage(err.message);
+        setAlert({ message: err, show: true, type: "error" });
       });
   };
   const deleteNotes = () => {
@@ -45,20 +48,36 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         setLoading(false);
-        setShowSucessAlert(true);
-        setShowErrorAlert(false);
-        loadNotes();
+        clearNotes();
+        setAlert({ message: "Delete", show: true, type: "success" });
       })
       .catch((err) => {
         console.log(err.message);
         setLoading(false);
-        setShowErrorAlert(false);
-        setErrorMessage(err.message);
+        setAlert({ message: err, show: true, type: "error" });
       });
   };
   const clearNotes = () => {
     setNotes([]);
-    setShowSucessAlert(false);
+  };
+  const [textInput, setTextInput] = React.useState("");
+
+  const createNote = () => {
+    setLoading(true);
+    fetch(
+      "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage/web-notes-create?text=" +
+        textInput
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        loadNotes(false);
+        setLoading(false);
+        setAlert({ message: "Create", show: true, type: "success" });
+      })
+      .catch((err) => {
+        setLoading(false);
+        setAlert({ message: err, show: true, type: "error" });
+      });
   };
 
   return (
@@ -69,26 +88,20 @@ function App() {
         </div>
       ) : (
         <>
-          <Modal></Modal>
-          <Alert show={showSucessAlert}>Success: {successMessage}</Alert>
-          <Alert show={showErrorAlert}>Error: {errorMessage} </Alert>
+          <Alert show={alert.show}>
+            {alert.type === "success" ? "Success" : "Error"}: {alert.message}
+          </Alert>
+          <Modal
+            setTextInput={setTextInput}
+            textInput={textInput}
+            createNote={createNote}
+            modalId="createNew"
+          ></Modal>
           <div className="btn-group" role="group">
-            <Button
-              onClick={() => {
-                loadNotes();
-              }}
-              label="Load"
-            ></Button>
+            <Button onClick={loadNotes} label="Load"></Button>
             <Button onClick={clearNotes} label="Clear"></Button>
             <Button onClick={deleteNotes} label="Delete"></Button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-            >
-              Create New
-            </button>
+            <ModalButton modalId="createNew" label="Create New"></ModalButton>
           </div>
           <div>
             <ListGroup

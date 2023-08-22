@@ -1,3 +1,10 @@
+.btn-group {
+  padding: 10px;
+}
+.main-list {
+  padding: 10px;
+}
+
 .loader-container {
   width: 100%;
   height: 100vh;

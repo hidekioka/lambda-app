@@ -12,11 +12,11 @@ import { useState } from "react";
 
 function ListGroup({ notes, heading, onSelectItem }: Props) {
   // or props: Props and all call will be made like props.item
-  const noItemsMessageAnd = notes.length === 0 && <p>No items found and</p>;
+  const noItemsMessageAnd = notes.length === 0 && <p>No items found</p>;
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
   return (
-    <>
+    <div className="main-list">
       <h1>{heading}</h1>
       {noItemsMessageAnd}
       <ul className="list-group">
@@ -40,7 +40,7 @@ function ListGroup({ notes, heading, onSelectItem }: Props) {
           </li>
         ))}{" "}
       </ul>
-    </>
+    </div>
   );
 }
 
