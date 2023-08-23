@@ -90,7 +90,7 @@ public class NoteFunction {
                     String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + "\", \"message\": " +
                             "\"" + "Created" + "\"}");
 
-            return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body);
+            return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
         } catch (LambdaException e) {
             String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
             return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
