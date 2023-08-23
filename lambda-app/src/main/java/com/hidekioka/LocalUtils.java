@@ -64,7 +64,7 @@ class LocalUtils {
         try {
             con = LocalUtils.connect();
             stmt = con.createStatement();
-            String deleteClause = "delete from " + table + " where 1=1 and " + whereClause;
+            String deleteClause = "delete from " + table + " where " + whereClause;
             stmt.executeUpdate(deleteClause);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,6 +131,25 @@ class LocalUtils {
                     .map(a -> a.getValue().toString()).collect(Collectors.joining(","));
             stmt.executeUpdate("insert into " + table + " ( " + keys + " ) values ('" + values + "')");
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new LambdaException(e.getMessage(), e);
+        } finally {
+            LocalUtils.closeQuietly(rs);
+            LocalUtils.closeQuietly(stmt);
+            LocalUtils.closeQuietly(con);
+        }
+    }
+
+    public static void updateDB(String table, Map.Entry<String, String> param, String whereClause) throws LambdaException {
+        Connection con = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            con = LocalUtils.connect();
+            stmt = con.createStatement();
+            String updateClause = "update " + table + " set " + param.getKey() + " = '" + param.getValue() + "' where " + whereClause;
+            stmt.executeUpdate(updateClause);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new LambdaException(e.getMessage(), e);

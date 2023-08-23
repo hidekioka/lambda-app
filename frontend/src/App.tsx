@@ -1,18 +1,22 @@
-import ListGroup from "./components/ListGroup";
+// import ListGroup from "./components/ListGroup";
 import Alert from "./components/Alert";
 import Button from "./components/Button";
 import Modal from "./components/Modal";
 import ModalButton from "./components/ModalButton";
 import Table from "./components/Table";
 import React from "react";
+import Note from "./components/Note";
+
 import "./App.css";
 
 function App() {
-  const handleSelectItem = (item: string) => {
-    console.log(item);
-  };
+  // const handleSelectItem = (item: string) => {
+  //   console.log(item);
+  // };
   const [loading, setLoading] = React.useState(false);
   const [notes, setNotes] = React.useState([]);
+  const [textInput, setTextInput] = React.useState("");
+  // const [note, setNote] = React.useState({ id: 0, text: "0" });
   const [alert, setAlert] = React.useState({
     message: "",
     show: false,
@@ -35,7 +39,7 @@ function App() {
         setNotes(data.message);
         if (mainLoad) {
           setLoading(false);
-          setAlert({ message: "Load", show: true, type: "success" });
+          setAlert({ message: "Loaded", show: true, type: "success" });
         }
       })
       .catch((err) => {
@@ -52,10 +56,10 @@ function App() {
       param;
     fetch(url)
       .then((res) => res.json())
-      .then((data) => {
+      .then(() => {
         setLoading(false);
         loadNotes(false);
-        setAlert({ message: "Delete", show: true, type: "success" });
+        setAlert({ message: "Deleted", show: true, type: "success" });
       })
       .catch((err) => {
         console.log(err.message);
@@ -66,7 +70,6 @@ function App() {
   const clearNotes = () => {
     setNotes([]);
   };
-  const [textInput, setTextInput] = React.useState("");
 
   const createNote = () => {
     setLoading(true);
@@ -75,10 +78,30 @@ function App() {
         textInput
     )
       .then((res) => res.json())
-      .then((data) => {
+      .then(() => {
         loadNotes(false);
         setLoading(false);
-        setAlert({ message: "Create", show: true, type: "success" });
+        setAlert({ message: "Created", show: true, type: "success" });
+      })
+      .catch((err) => {
+        setLoading(false);
+        setAlert({ message: err, show: true, type: "error" });
+      });
+  };
+
+  const updateNote = () => {
+    setLoading(true);
+    fetch(
+      "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage/web-notes-create?text=" +
+        textInput +
+        "&id=" +
+        0
+    )
+      .then((res) => res.json())
+      .then(() => {
+        loadNotes(false);
+        setLoading(false);
+        setAlert({ message: "Updated", show: true, type: "success" });
       })
       .catch((err) => {
         setLoading(false);
@@ -94,12 +117,6 @@ function App() {
         </div>
       ) : (
         <>
-          <p>
-            <i
-              className="bi bi-alarm-fill text-warning"
-              style={{ fontSize: 50 }}
-            ></i>
-          </p>
           <Alert show={alert.show}>
             {alert.type === "success" ? "Success" : "Error"}: {alert.message}
           </Alert>
@@ -108,6 +125,12 @@ function App() {
             textInput={textInput}
             createNote={createNote}
             modalId="createNew"
+          ></Modal>
+          <Modal
+            setTextInput={setTextInput}
+            textInput={textInput}
+            createNote={createNote}
+            modalId="edit"
           ></Modal>
           <div className="btn-group" role="group">
             <Button onClick={loadNotes} label="Load"></Button>

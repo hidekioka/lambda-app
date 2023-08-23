@@ -5,10 +5,7 @@ import org.json.JSONArray;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Module
 class NoteService {
@@ -44,6 +41,12 @@ class NoteService {
         } else {
             LocalUtils.removeDB(TABLE_NAME);
         }
+    }
+
+    public void update(String selectedId, String text) throws LambdaException {
+        Map.Entry<String, String> pair = new AbstractMap.SimpleEntry<>("text", text);
+
+        LocalUtils.updateDB(TABLE_NAME, pair, " id = " + selectedId);
     }
 
 }

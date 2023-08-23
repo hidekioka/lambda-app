@@ -1,13 +1,10 @@
 import React from "react";
+import Note from "./Note";
 
 interface Props {
   notes: Note[];
   heading: string;
   deleteNote: (id: number) => void;
-}
-interface Note {
-  id: number;
-  text: string;
 }
 const Table = (prop: Props) => {
   return (
@@ -27,14 +24,23 @@ const Table = (prop: Props) => {
               <td>{note.id}</td>
               <td>{note.text}</td>
               <td>
-                <button
-                  type="button"
-                  className="btn-close"
-                  aria-label="Close"
-                  onClick={() => {
-                    prop.deleteNote(note.id);
-                  }}
-                ></button>
+                <div className="btn-group" role="group">
+                  <button
+                    type="button"
+                    className="btn bi bi-x-lg btn-outline-secondary"
+                    aria-label="Close"
+                    onClick={() => {
+                      prop.deleteNote(note.id);
+                    }}
+                  ></button>
+                  <button
+                    type="button"
+                    className="btn bi bi-pencil btn-outline-secondary"
+                    onClick={() => {
+                      console.log("edit");
+                    }}
+                  ></button>
+                </div>
               </td>
             </tr>
           ))}

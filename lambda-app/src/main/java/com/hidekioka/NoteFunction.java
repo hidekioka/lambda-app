@@ -53,8 +53,9 @@ public class NoteFunction {
 
     public APIGatewayProxyResponseEvent remove(final APIGatewayProxyRequestEvent input, final Context context) {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
-        String selectedId = (input == null || input.getQueryStringParameters() == null) ? null : input.getQueryStringParameters().get(
-                "id");
+        String selectedId = (input == null || input.getQueryStringParameters() == null) ? null :
+                input.getQueryStringParameters().get(
+                        "id");
         LocalUtils.logWithClass(this.getClass().toString(), context.getLogger(), selectedId);
         try {
             getNoteService().remove(selectedId);
@@ -63,6 +64,33 @@ public class NoteFunction {
                             "Removed" + "\"}");
 
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
+        } catch (LambdaException e) {
+            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
+            return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+    }
+
+    public APIGatewayProxyResponseEvent update(final APIGatewayProxyRequestEvent input, final Context context) throws LambdaException {
+        APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
+        if (input == null || input.getQueryStringParameters() == null || input.getQueryStringParameters().get(
+                "text") == null) {
+            throw new LambdaException("Missing parameter: text", null);
+        }
+        String selectedId = (input == null || input.getQueryStringParameters() == null) ? null :
+                input.getQueryStringParameters().get(
+                        "id");
+        try {
+            if (input == null || input.getQueryStringParameters() == null || input.getQueryStringParameters().get(
+                    "text") == null) {
+                throw new LambdaException("Missing parameter: text", null);
+            }
+            getNoteService().update(selectedId, input.getQueryStringParameters().get("text"));
+            String body =
+
+                    String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + "\", \"message\": " +
+                            "\"" + "Created" + "\"}");
+
+            return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body);
         } catch (LambdaException e) {
             String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
             return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
