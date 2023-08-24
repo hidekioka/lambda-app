@@ -37,9 +37,9 @@ function App() {
     setNotes([]);
   };
   // Calls to the backend
-  const loadNotesWithLoadingAndAlert = () => {
+  const loadNotesWithLoadingAndAlert = async () => {
     setLoading(true);
-    loadNotes();
+    await loadNotes();
     setAlert({ message: "Loaded", show: true, type: "success" });
     setLoading(false);
   };
@@ -52,7 +52,7 @@ function App() {
     setLoading(true);
     const param = id > 0 ? "?id=" + id : "";
     await fetch(webnotesurl + "/web-notes-delete" + param);
-    loadNotes();
+    await loadNotes();
     setAlert({ message: "Deleted", show: true, type: "success" });
     setLoading(false);
   };
@@ -60,7 +60,7 @@ function App() {
   const createNote = async (text: string) => {
     setLoading(true);
     await fetch(webnotesurl + "/web-notes-create?text=" + text);
-    loadNotes();
+    await loadNotes();
     setAlert({ message: "Created", show: true, type: "success" });
     setLoading(false);
   };
@@ -68,7 +68,7 @@ function App() {
   const updateNote = async (id: number, text: string) => {
     setLoading(true);
     await fetch(webnotesurl + "/web-notes-update?id=" + id + "&text=" + text);
-    loadNotes();
+    await loadNotes();
     setAlert({ message: "Updated", show: true, type: "success" });
     setLoading(false);
   };

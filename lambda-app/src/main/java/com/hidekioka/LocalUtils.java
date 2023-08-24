@@ -97,7 +97,7 @@ class LocalUtils {
             con = LocalUtils.connect();
             stmt = con.createStatement();
 
-            rs = stmt.executeQuery("select * from " + table);
+            rs = stmt.executeQuery("select * from " + table + " order by id");
             ResultSetMetaData metaData = rs.getMetaData();
             Integer columnCount = metaData.getColumnCount();
             while (rs.next()) {
@@ -148,7 +148,8 @@ class LocalUtils {
         try {
             con = LocalUtils.connect();
             stmt = con.createStatement();
-            String updateClause = "update " + table + " set " + param.getKey() + " = '" + param.getValue() + "' where " + whereClause;
+            String updateClause = "update " + table + " set " + param.getKey() + " = '" + param.getValue() + "' where" +
+                    " " + whereClause;
             stmt.executeUpdate(updateClause);
         } catch (SQLException e) {
             e.printStackTrace();
