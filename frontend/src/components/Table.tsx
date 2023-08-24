@@ -1,4 +1,3 @@
-import React from "react";
 import Note from "./Note";
 
 interface Props {
@@ -19,7 +18,7 @@ const Table = (prop: Props) => {
           </tr>
         </thead>
         <tbody>
-          {prop.notes.map((note, index) => (
+          {prop.notes.map((note) => (
             <tr key={note.id}>
               <td>{note.id}</td>
               <td>{note.text}</td>

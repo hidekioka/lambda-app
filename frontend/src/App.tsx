@@ -5,9 +5,11 @@ import Modal from "./components/Modal";
 import ModalButton from "./components/ModalButton";
 import Table from "./components/Table";
 import React from "react";
-import Note from "./components/Note";
 
 import "./App.css";
+
+const webnotesurl: string =
+  "https://nkq7v0s6o2.execute-api.sa-east-1.amazonaws.com/default";
 
 function App() {
   // const handleSelectItem = (item: string) => {
@@ -24,89 +26,45 @@ function App() {
   });
 
   React.useEffect(() => {
-    loadNotes(true);
+    loadNotesWithLoadingAndAlert();
   }, []);
-  const loadNotes = (mainLoad = true) => {
-    // main load will trigger loading screen and alert, used as false when after creating or deleting
-    if (mainLoad) {
-      setLoading(true);
-    }
-    fetch(
-      "https://nkq7v0s6o2.execute-api.sa-east-1.amazonaws.com/default/web-notes-load"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setNotes(data.message);
-        if (mainLoad) {
-          setLoading(false);
-          setAlert({ message: "Loaded", show: true, type: "success" });
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-        setLoading(false);
-        setAlert({ message: err, show: true, type: "error" });
-      });
-  };
-  const deleteNote = (id: number) => {
+  const loadNotesWithLoadingAndAlert = () => {
     setLoading(true);
-    const param = id > 0 ? "?id=" + id : "";
-    const url =
-      "https://nkq7v0s6o2.execute-api.sa-east-1.amazonaws.com/default/web-notes-delete" +
-      param;
-    fetch(url)
-      .then((res) => res.json())
-      .then(() => {
-        setLoading(false);
-        loadNotes(false);
-        setAlert({ message: "Deleted", show: true, type: "success" });
-      })
-      .catch((err) => {
-        console.log(err.message);
-        setLoading(false);
-        setAlert({ message: err, show: true, type: "error" });
-      });
+    loadNotes();
+    setAlert({ message: "Loaded", show: true, type: "success" });
+    setLoading(false);
   };
   const clearNotes = () => {
     setNotes([]);
   };
-
-  const createNote = () => {
+  const loadNotes = async () => {
+    let response: Response = await fetch(webnotesurl + "/web-notes-load");
+    const data = await response.json();
+    setNotes(data.message);
+  };
+  const deleteNote = async (id: number) => {
     setLoading(true);
-    fetch(
-      "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage/web-notes-create?text=" +
-        textInput
-    )
-      .then((res) => res.json())
-      .then(() => {
-        loadNotes(false);
-        setLoading(false);
-        setAlert({ message: "Created", show: true, type: "success" });
-      })
-      .catch((err) => {
-        setLoading(false);
-        setAlert({ message: err, show: true, type: "error" });
-      });
+    const param = id > 0 ? "?id=" + id : "";
+    await fetch(webnotesurl + "/web-notes-delete" + param);
+    loadNotes();
+    setAlert({ message: "Deleted", show: true, type: "success" });
+    setLoading(false);
   };
 
-  const updateNote = () => {
+  const createNote = async () => {
     setLoading(true);
-    fetch(
-      "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage/web-notes-create?text=" +
-        textInput +
-        "&id=" +
-        0
-    )
-      .then((res) => res.json())
-      .then(() => {
-        loadNotes(false);
-        setLoading(false);
-        setAlert({ message: "Updated", show: true, type: "success" });
-      })
-      .catch((err) => {
-        setLoading(false);
-        setAlert({ message: err, show: true, type: "error" });
-      });
+    await fetch(webnotesurl + "/web-notes-create?text=" + textInput);
+    loadNotes();
+    setAlert({ message: "Created", show: true, type: "success" });
+    setLoading(false);
+  };
+
+  const updateNote = async () => {
+    setLoading(true);
+    await fetch(webnotesurl + "/web-notes-update");
+    loadNotes();
+    setAlert({ message: "Updated", show: true, type: "success" });
+    setLoading(false);
   };
 
   return (
@@ -133,7 +91,10 @@ function App() {
             modalId="edit"
           ></Modal>
           <div className="btn-group" role="group">
-            <Button onClick={loadNotes} label="Load"></Button>
+            <Button
+              onClick={loadNotesWithLoadingAndAlert}
+              label="Load"
+            ></Button>
             <Button onClick={clearNotes} label="Clear"></Button>
             <Button
               onClick={() => {

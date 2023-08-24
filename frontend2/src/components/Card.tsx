@@ -7,7 +7,7 @@ interface Props {
 }
 function Card(props: Props) {
   return (
-    <Accordion>
+    <Accordion className="web-notes-card">
       <Accordion.Item eventKey={String(props.note.id)}>
         <Accordion.Header>{props.note.title}</Accordion.Header>
         <Accordion.Body>{props.note.description}</Accordion.Body>
