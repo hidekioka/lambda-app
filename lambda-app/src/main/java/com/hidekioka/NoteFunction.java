@@ -36,7 +36,7 @@ public class NoteFunction {
     public APIGatewayProxyResponseEvent load(final APIGatewayProxyRequestEvent input, final Context context) {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
         try {
-            String functionReturnString = getNoteService().findAll();
+            String functionReturnString = getNoteService().findAll(context);
             String body =
                     String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + ", \"message\": " + functionReturnString + "}");
 

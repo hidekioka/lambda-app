@@ -1,5 +1,6 @@
 package com.hidekioka;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
@@ -11,10 +12,10 @@ import java.util.stream.Collectors;
 class LocalUtils {
 
     public static final String LINE_BREAK = "<br/>" + System.lineSeparator();
-    static final String DEFAULT_URL = "jdbc:postgresql://ec2-15-229-32-184.sa-east-1.compute.amazonaws" +
+    static final String DEFAULT_URL = "jdbc:postgresql://postgres.ceuekxnc0ork.sa-east-1.rds.amazonaws" +
             ".com:5432/postgres";
     static final String DEFAULT_USER = "postgres";
-    static final String DEFAULT_PASSWORD = "";
+    static final String DEFAULT_PASSWORD = "postgres";
     static String version = "";
 
     public static String getApplicationVersion() {
@@ -87,7 +88,16 @@ class LocalUtils {
         return conn;
     }
 
-    public static List<Map<String, Object>> findAllDB(String table) throws LambdaException {
+    public static List<Map<String, Object>> findAllDB(String table, Context context) throws LambdaException {
+        String dbUrl = System.getenv("DB_URL");
+        String dbUser = System.getenv("DB_USER");
+        String dbPassword = System.getenv("DB_PASSWORD");
+        context.getLogger().log("DB_URL" + dbUrl);
+        context.getLogger().log("DB_USER" + dbUser);
+        context.getLogger().log("DB_PASSWORD" + dbPassword);
+        context.getLogger().log("DEFAULT_URL" + DEFAULT_URL);
+        context.getLogger().log("DEFAULT_USER" + DEFAULT_USER);
+        context.getLogger().log("DEFAULT_PASSWORD" + DEFAULT_PASSWORD);
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         StringBuilder sb = new StringBuilder();
         Connection con = null;

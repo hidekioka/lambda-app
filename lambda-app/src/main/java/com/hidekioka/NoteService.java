@@ -1,5 +1,6 @@
 package com.hidekioka;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import dagger.Module;
 import org.json.JSONArray;
 
@@ -17,8 +18,8 @@ class NoteService {
     public NoteService() {
     }
 
-    public String findAll() throws LambdaException {
-        List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME);
+    public String findAll(Context context) throws LambdaException {
+        List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME, context);
         JSONArray jsonArray = new JSONArray();
         for (Map<String, Object> it : resultList) {
             jsonArray.put(it);

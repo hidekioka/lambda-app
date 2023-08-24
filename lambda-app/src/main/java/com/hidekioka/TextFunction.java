@@ -1,5 +1,7 @@
 package com.hidekioka;
 
+import com.amazonaws.services.lambda.runtime.Context;
+
 import java.util.Map;
 
 public class TextFunction {
@@ -14,8 +16,8 @@ public class TextFunction {
         return LocalUtils.textWithVersion(LocalUtils.getApplicationVersion(), "Created!");
     }
 
-    public String load() throws LambdaException {
-        return LocalUtils.textWithVersion(LocalUtils.getApplicationVersion(), getTextService().findAll());
+    public String load(Context context) throws LambdaException {
+        return LocalUtils.textWithVersion(LocalUtils.getApplicationVersion(), getTextService().findAll(context));
     }
 
     public String remove() throws LambdaException {

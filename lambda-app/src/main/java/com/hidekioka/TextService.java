@@ -1,5 +1,6 @@
 package com.hidekioka;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import dagger.Module;
 
 import javax.inject.Inject;
@@ -19,8 +20,8 @@ class TextService {
     public TextService() {
     }
 
-    public String findAll() throws LambdaException {
-        List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME);
+    public String findAll(Context context) throws LambdaException {
+        List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME, context);
         return resultList.toString();//.stream().map(a -> a.get("text").toString()).collect(Collectors.joining(", " +
         // LocalUtils.LINE_BREAK));
     }
