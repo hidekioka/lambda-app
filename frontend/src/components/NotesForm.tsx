@@ -1,27 +1,27 @@
-import React from "react";
-import Button from "./Button";
+import { ChangeEvent } from "react";
 
 interface Props {
+  label?: string;
   textInput: string;
-  handleTextChange: (event: React.ChangeEvent<any>) => void;
+  handleTextChange: (event: ChangeEvent<any>) => void;
 }
 
-const Form = ({ textInput, handleTextChange }: Props) => {
+const NotesForm = (props: Props) => {
   return (
     <>
       <div className="mb-3">
         <label htmlFor="exampleFormControlTextarea1" className="form-label">
-          Example textarea
+          {props.label}
         </label>
         <textarea
           className="form-control"
           id="exampleFormControlTextarea1"
-          value={textInput}
-          onChange={handleTextChange}
+          value={props.textInput}
+          onChange={props.handleTextChange}
         ></textarea>
       </div>
     </>
   );
 };
 
-export default Form;
+export default NotesForm;
