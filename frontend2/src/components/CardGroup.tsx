@@ -1,5 +1,5 @@
 import React from "react";
-import Card from "./Card";
+import AccordionCard from "./AccordionCard";
 import { Note } from "../model";
 
 interface Props {
@@ -7,9 +7,9 @@ interface Props {
 }
 function CardGroup(props: Props) {
   return (
-    <div>
+    <div className="web-notes-card-group">
       {props.notes.map((note) => (
-        <Card note={note} key={note.id}></Card>
+        <AccordionCard note={note} key={note.id}></AccordionCard>
       ))}
     </div>
   );

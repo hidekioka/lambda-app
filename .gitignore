@@ -31,3 +31,6 @@ target/classes/META-INF/maven/com.hidekioka/lambda-app/pom.properties
 .project
 .classpath
 lambda-app/target*
+frontend/package-lock.json
+frontend/package-lock.json
+frontend/package.json
