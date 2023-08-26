@@ -102,9 +102,6 @@
         </profile>
         <profile>
             <id>container</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <dependencies>
                 <!-- AWS: lambda as container -->
                 <dependency>
