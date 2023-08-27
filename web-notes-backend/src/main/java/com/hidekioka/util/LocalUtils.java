@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -135,15 +136,26 @@ public class LocalUtils {
 
 	public static void insertDB(String table, Map<String, Object> params) throws LambdaException {
 		Connection con = null;
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
 			con = LocalUtils.connect();
-			stmt = con.createStatement();
 			String keys = params.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.joining(","));
-			String values = params.entrySet().stream().map(a -> "'" + a.getValue().toString() + "'")
-					.collect(Collectors.joining(","));
-			stmt.executeUpdate("insert into " + table + " ( " + keys + " ) values (" + values + ")");
+//			String values = params.entrySet().stream().map(a -> "'" + a.getValue().toString() + "'")
+//					.collect(Collectors.joining(","));
+			String questionMarks = params.entrySet().stream().map(a -> "?").collect(Collectors.joining(","));
+			stmt = con.prepareStatement("insert into " + table + " ( " + keys + " ) values (" + questionMarks + ")");
+			int count = 1;
+			for (Object value : params.values()) {
+				stmt.setString(count, value.toString());
+				count++;
+			}
+			System.err.print("insert into " + table + " ( " + questionMarks + " ) values (" + questionMarks + ")");
+			System.err.print(stmt.getMetaData());
+			System.err.print(stmt.getParameterMetaData());
+			System.err.print(stmt);
+			
+			stmt.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();

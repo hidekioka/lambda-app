@@ -1,10 +1,15 @@
 import React from "react";
 import Accordion from "react-bootstrap/Accordion";
 import { Note } from "../model";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   note: Note;
 }
+
+// special characters are escaped by \ before, `` makes a multiline string
+const mdtext: string = `# A demo of \`react-markdown\``;
+
 function AccordionCard(props: Props) {
   return (
     <Accordion className="web-notes-card">
@@ -12,8 +17,10 @@ function AccordionCard(props: Props) {
         eventKey={String(props.note.id)}
         className="web-notes-card-inner"
       >
-        <Accordion.Header>{props.note.text}</Accordion.Header>
-        <Accordion.Body>{props.note.text}</Accordion.Body>
+        <Accordion.Header>{props.note.title}</Accordion.Header>
+        <Accordion.Body>
+          <ReactMarkdown>{props.note.description}</ReactMarkdown>
+        </Accordion.Body>
       </Accordion.Item>
     </Accordion>
   );

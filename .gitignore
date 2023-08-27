@@ -30,3 +30,8 @@ lambda-app/.factorypath
 lambda-app/target/*
 frontend/package-lock.json
 frontend/package.json
+web-notes-frontend-cards/package-lock.json
+web-notes-backend/target/maven-archiver/pom.properties
+web-notes-frontend-cards/package.json
+web-notes-backend/target/maven-archiver/pom.properties
+web-notes-frontend-cards/package.json

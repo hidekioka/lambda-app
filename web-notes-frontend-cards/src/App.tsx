@@ -51,7 +51,7 @@ function App() {
   const loadNotes = async () => {
     let response: Response = await fetch(webnotesurl + "load");
     const data = await response.json();
-    setNotes(data.message);
+    setNotes(JSON.parse(data.message));
   };
   const deleteNote = async (id: number) => {
     setLoading(true);
