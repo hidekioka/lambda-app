@@ -7,19 +7,26 @@ import { useState, useEffect } from "react";
 
 import "./App.css";
 
+// const lambdaFunction: string = "/java-container-";
 const lambdaFunction: string = "/web-notes-";
-// const webnotesurl: string =
-//   " https://nkq7v0s6o2.execute-api.sa-east-1.amazonaws.com/test-stage" +
-//   lambdaFunction;
+
+// REST API GATEWAY IN AWS
 const webnotesurl: string =
-  "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage" +
+  " https://nkq7v0s6o2.execute-api.sa-east-1.amazonaws.com/default" +
   lambdaFunction;
-// const awsRequestHeader = {
-//   "X-Amz-Date": "20230825T193850Z",
-//   Accept: "*/*",
-//   Authorization:
-//     "AWS4-HMAC-SHA256 Credential=AKIA5T7VRFX75DFGFHPO/20230825/sa-east-1/execute-api/aws4_request, SignedHeaders=host;x-amz-date, Signature=05fb457da218436df03f463878b770cf372d42b617ea93d0fd2a162653106144",
-// };
+
+// HTTP API GATEWAY IN AWS
+// const webnotesurl: string =
+//   "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage" +
+//   lambdaFunction;
+const awsRequestHeader: HeadersInit = new Headers();
+const awsAuth: string =
+  "AWS4-HMAC-SHA256 Credential=AKIA5T7VRFX75DFGFHPO/20230828/sa-east-1/execute-api/aws4_request, SignedHeaders=host;x-amz-date, Signature=39cc69d88a67c45a882517cb68c0913c3c72265f9978ca8d64602b7e0b24b779";
+
+// awsRequestHeader.set("X-Amz-Date", "20230828T132439Z");
+// awsRequestHeader.set("Authorization", awsAuth);
+// awsRequestHeader.set("Host", "zcohs7rk32.execute-api.sa-east-1.amazonaws.com");
+// awsRequestHeader.set("Accept-Encoding", "gzip, deflate, br");
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -40,6 +47,7 @@ function App() {
 
   // First load
   useEffect(() => {
+    // is being called twice because StrictMode do double call to search for problems (just in dev, not in prod)
     loadNotesWithLoadingAndAlert();
   }, []);
 
@@ -56,18 +64,31 @@ function App() {
   };
   const loadNotes = async () => {
     let response: Response = await fetch(webnotesurl + "load", {
-      method: "GET",
+      method: "OPTIONS",
+      headers: awsRequestHeader,
     });
     const data = await response.json();
     setNotes(data.message);
   };
   const deleteNote = async (id: number) => {
     setLoading(true);
-    const param = id > 0 ? "?id=" + id : "";
-    await fetch(webnotesurl + "delete" + param);
-    await loadNotes();
-    setAlert({ message: "Deleted", show: true, type: "success" });
-    setLoading(false);
+    try {
+      const param = id > 0 ? "?id=" + id : "";
+      const response = await fetch(webnotesurl + "delete" + param, {
+        method: "GET",
+        headers: awsRequestHeader,
+      });
+      if (response.ok) {
+        await loadNotes();
+        setAlert({ message: "Deleted", show: true, type: "success" });
+      } else {
+        throw response.statusText;
+      }
+    } catch (e) {
+      setAlert({ message: "Deleted", show: true, type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const createNote = async (text: string) => {
@@ -94,7 +115,7 @@ function App() {
         </div>
       ) : (
         <>
-          <Alert show={alert.show}>
+          <Alert show={alert.show} type={alert.type}>
             {alert.type === "success" ? "Success" : "Error"}: {alert.message}
           </Alert>
           <NotesModal
