@@ -4,17 +4,22 @@ import { useState } from "react";
 interface Props {
   children: ReactNode;
   show?: boolean;
+  type: string;
 }
 
-const Alert = ({ children, show = false }: Props) => {
-  const [showInternal, setShowInternal] = useState(show);
+const Alert = (props: Props) => {
+  const [showInternal, setShowInternal] = useState(props.show);
   return (
     <div
-      className="alert alert-primary alert-dismissible fade show"
+      className={
+        (props.type === "success"
+          ? "alert alert-success"
+          : "alert alert-danger") + " alert alert-dismissible fade show"
+      }
       role="alert"
       style={{ display: showInternal ? "block" : "none" }}
     >
-      {children}
+      {props.children}
       <button
         type="button"
         className="btn-close"
