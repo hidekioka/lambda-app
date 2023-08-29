@@ -59,6 +59,12 @@ public class LocalUtils {
 	public static APIGatewayProxyResponseEvent buildResponse() {
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
+        // CORS in the backend: https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html
+        //		headers.put("Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key,
+        //		X-Amz-Security-Token");
+        headers.put("Access-Control-Allow-Headers", "*");
+        headers.put("Access-Control-Allow-Methods", "*");
+        headers.put("Access-Control-Allow-Origin", "*");
 
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent().withHeaders(headers);
 		return response;
@@ -154,7 +160,7 @@ public class LocalUtils {
 			System.err.print(stmt.getMetaData());
 			System.err.print(stmt.getParameterMetaData());
 			System.err.print(stmt);
-			
+
 			stmt.executeUpdate();
 
 		} catch (SQLException e) {

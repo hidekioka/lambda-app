@@ -17,7 +17,7 @@ const webnotesurl: string =
 
 // HTTP API GATEWAY IN AWS
 // const webnotesurl: string =
-//   "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage" +
+//   "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/default" +
 //   lambdaFunction;
 const awsRequestHeader: HeadersInit = new Headers();
 const awsAuth: string =
@@ -58,15 +58,23 @@ function App() {
   // Calls to the backend
   const loadNotesWithLoadingAndAlert = async () => {
     setLoading(true);
-    await loadNotes();
-    setAlert({ message: "Loaded", show: true, type: "success" });
-    setLoading(false);
+    try {
+      await loadNotes();
+      setAlert({ message: "Loaded", show: true, type: "success" });
+    } catch (e) {
+      setAlert({ message: "Loaded", show: true, type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
   const loadNotes = async () => {
     let response: Response = await fetch(webnotesurl + "load", {
-      method: "OPTIONS",
+      method: "GET",
       headers: awsRequestHeader,
     });
+    if (!response.ok) {
+      throw response.statusText;
+    }
     const data = await response.json();
     setNotes(data.message);
   };
@@ -78,12 +86,11 @@ function App() {
         method: "GET",
         headers: awsRequestHeader,
       });
-      if (response.ok) {
-        await loadNotes();
-        setAlert({ message: "Deleted", show: true, type: "success" });
-      } else {
+      if (!response.ok) {
         throw response.statusText;
       }
+      await loadNotes();
+      setAlert({ message: "Deleted", show: true, type: "success" });
     } catch (e) {
       setAlert({ message: "Deleted", show: true, type: "error" });
     } finally {
@@ -93,18 +100,36 @@ function App() {
 
   const createNote = async (text: string) => {
     setLoading(true);
-    await fetch(webnotesurl + "create?text=" + text);
-    await loadNotes();
-    setAlert({ message: "Created", show: true, type: "success" });
-    setLoading(false);
+    try {
+      const response = await fetch(webnotesurl + "create?text=" + text);
+      if (!response.ok) {
+        throw response.statusText;
+      }
+      await loadNotes();
+      setAlert({ message: "Created", show: true, type: "success" });
+    } catch (e) {
+      setAlert({ message: "Created", show: true, type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateNote = async (id: number, text: string) => {
     setLoading(true);
-    await fetch(webnotesurl + "update?id=" + id + "&text=" + text);
-    await loadNotes();
-    setAlert({ message: "Updated", show: true, type: "success" });
-    setLoading(false);
+    try {
+      const response = await fetch(
+        webnotesurl + "update?id=" + id + "&text=" + text
+      );
+      if (!response.ok) {
+        throw response.statusText;
+      }
+      await loadNotes();
+      setAlert({ message: "Updated", show: true, type: "success" });
+    } catch (e) {
+      setAlert({ message: "Updated", show: true, type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
