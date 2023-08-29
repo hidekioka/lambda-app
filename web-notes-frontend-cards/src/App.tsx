@@ -1,27 +1,43 @@
 import { useState, useEffect } from "react";
-import CardGroup from "./components/CardGroup";
+import AccordionCardGroup from "./components/AccordionCardGroup";
+import SimpleCardGroup from "./components/SimpleCardGroup";
+import NotesModal from "./components/NotesModal";
 import NavBar from "./components/NavBar";
 import { Note } from "./model";
 import "./App.css";
+import Alert from "react-bootstrap/Alert";
 
 // const lambdaFunction: string = "/web-notes-";
 const lambdaFunction: string = "/md-note-";
 const webnotesurl: string =
-  "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/test-stage" +
+  "https://zcohs7rk32.execute-api.sa-east-1.amazonaws.com/default" +
   lambdaFunction;
 // const webnotesurl: string =
 //   "https://nkq7v0s6o2.execute-api.sa-east-1.amazonaws.com/default" +
 //   lambdaFunction;
 
-  
+export interface AlertProp {
+  show: boolean;
+  type: "success" | "danger" | "warning";
+  message: string;
+}
+
+export interface ModalProp {
+  show: boolean;
+  title: string;
+}
 
 function App() {
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState([]);
-  const [alert, setAlert] = useState({
-    message: "",
+  const [alert, setAlert] = useState<AlertProp>({
     show: false,
     type: "success",
+    message: "",
+  });
+  const [modal, setModal] = useState<ModalProp>({
+    show: false,
+    title: "Create new",
   });
 
   // Create Modal variables
@@ -44,12 +60,20 @@ function App() {
   // Calls to the backend
   const loadNotesWithLoadingAndAlert = async () => {
     setLoading(true);
-    await loadNotes();
-    setAlert({ message: "Loaded", show: true, type: "success" });
+    try {
+      await loadNotes();
+      // correct load doesn't need to show a message
+      // setAlert({ message: "Loaded", show: true, type: "success" });
+    } catch (e) {
+      setAlert({ message: "[Error] " + e, show: true, type: "danger" });
+    }
     setLoading(false);
   };
   const loadNotes = async () => {
     let response: Response = await fetch(webnotesurl + "load");
+    if (!response.ok) {
+      throw response.statusText;
+    }
     const data = await response.json();
     setNotes(JSON.parse(data.message));
   };
@@ -92,8 +116,35 @@ function App() {
         </div>
       ) : (
         <>
+          <Alert
+            variant={alert.type}
+            show={alert.show}
+            onClose={() => {
+              setAlert({
+                show: false,
+                type: "success",
+                message: "",
+              });
+            }}
+            dismissible
+          >
+            {alert.message}
+          </Alert>
+          <NotesModal
+            show={modal.show}
+            title={modal.title}
+            handleClose={() =>
+              setModal({
+                show: false,
+                title: "Create new",
+              })
+            }
+          >
+            OOF
+          </NotesModal>
           <NavBar></NavBar>
-          <CardGroup notes={notes}></CardGroup>
+          {/* <AccordionCardGroup notes={notes}></AccordionCardGroup> */}
+          <SimpleCardGroup notes={notes}></SimpleCardGroup>
         </>
       )}
     </>

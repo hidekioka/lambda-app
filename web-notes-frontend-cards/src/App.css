@@ -1,18 +1,17 @@
-.web-notes-card-group {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(400px,1fr));
-  padding: 20px;
-  grid-gap: 40px;
-}
-
-.web-notes-card {
-  border-radius: 20px;
-  max-width: 420px;
-}
-
 .web-notes-card pre {
   background: rgba(57, 57, 57, 1);
   padding: 6px;
+}
+
+.web-notes-card {
+  margin: 10px;
+  min-width: 320px;
+}
+
+.web-notes-card-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
 }
 
 .loader-container {

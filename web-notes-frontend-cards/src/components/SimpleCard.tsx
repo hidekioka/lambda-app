@@ -1,11 +1,37 @@
 import React from "react";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { Note } from "../model";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   note: Note;
 }
 function SimpleCard(props: Props) {
-  return <></>;
+  return (
+    <Card style={{ width: "18rem" }} className="web-notes-card">
+      {/* <Card.Img variant="top" src="holder.js/100px180" /> */}
+      <Card.Header>
+        <div>{props.note.title}</div>
+        <ButtonGroup>
+          <Button
+            className="bi bi-x-lg web-notes-iconed-button"
+            variant="outline-secondary"
+          ></Button>
+          <Button
+            className="bi bi-pencil web-notes-iconed-button"
+            variant="outline-secondary"
+          ></Button>
+        </ButtonGroup>
+      </Card.Header>
+      <Card.Body>
+        <Card.Text>
+          <ReactMarkdown>{props.note.description}</ReactMarkdown>
+        </Card.Text>
+      </Card.Body>
+    </Card>
+  );
 }
 
 export default SimpleCard;

@@ -1,5 +1,6 @@
 import React from "react";
 import Accordion from "react-bootstrap/Accordion";
+import Button from "react-bootstrap/Button";
 import { Note } from "../model";
 import ReactMarkdown from "react-markdown";
 
@@ -17,7 +18,10 @@ function AccordionCard(props: Props) {
         eventKey={String(props.note.id)}
         className="web-notes-card-inner"
       >
-        <Accordion.Header>{props.note.title}</Accordion.Header>
+        <Accordion.Header>
+          {props.note.title}
+          <Button className="bi bi-x-lg"></Button>
+        </Accordion.Header>
         <Accordion.Body>
           <ReactMarkdown>{props.note.description}</ReactMarkdown>
         </Accordion.Body>
