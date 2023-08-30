@@ -5,6 +5,8 @@ import { Note } from "../model";
 
 interface Props {
   notes: Note[];
+  handleDelete: (note: Note) => void;
+  handleEdit: (note: Note) => void;
 }
 function SimpleCardGroup(props: Props) {
   return (
@@ -15,7 +17,12 @@ function SimpleCardGroup(props: Props) {
     // </div>
     <div className="web-notes-card-group">
       {props.notes.map((note) => (
-        <SimpleCard note={note} key={note.id}></SimpleCard>
+        <SimpleCard
+          note={note}
+          key={note.id}
+          handleDelete={props.handleDelete}
+          handleEdit={props.handleEdit}
+        ></SimpleCard>
       ))}
     </div>
   );

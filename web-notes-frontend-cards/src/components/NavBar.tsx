@@ -1,14 +1,14 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import Button from "react-bootstrap/Button";
 
 interface Props {
-  title?: string;
-  description?: string;
+  children?: ReactNode;
 }
-function NavBar({ title, description }: Props) {
+function NavBar(props: Props) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -16,7 +16,7 @@ function NavBar({ title, description }: Props) {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="#home">Notes</Nav.Link>
+            {props.children}
           </Nav>
         </Navbar.Collapse>
       </Container>

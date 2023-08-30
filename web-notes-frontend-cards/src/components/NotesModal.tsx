@@ -7,6 +7,7 @@ interface Props {
   title: string;
   children: ReactNode;
   handleClose: () => void;
+  handleSave: () => void;
 }
 function NotesModal(props: Props) {
   return (
@@ -25,7 +26,15 @@ function NotesModal(props: Props) {
           <Button variant="secondary" onClick={props.handleClose}>
             Close
           </Button>
-          <Button variant="primary">Save</Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              props.handleSave();
+              props.handleClose();
+            }}
+          >
+            Save
+          </Button>
         </Modal.Footer>
       </Modal>
     </>

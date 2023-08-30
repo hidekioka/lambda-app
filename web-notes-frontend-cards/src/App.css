@@ -8,10 +8,22 @@
   min-width: 320px;
 }
 
+.web-notes-card-header div {
+  max-width: 70%;
+}
+
 .web-notes-card-group {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
+}
+
+.web-notes-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 22px;
+  font-weight: bold;
 }
 
 .loader-container {
