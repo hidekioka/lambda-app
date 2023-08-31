@@ -6,6 +6,7 @@ import Table from "./Table.js";
 import { useState, useEffect } from "react";
 import { properties } from "../assets/properties.js";
 import secureLocalStorage from "react-secure-storage";
+import fetchPlus from "./Utils.tsx";
 
 function NoteCrud() {
   let awsRequestHeader: HeadersInit = {
@@ -50,13 +51,7 @@ function NoteCrud() {
     }
   };
   const loadNotes = async () => {
-    let response: Response = await fetch(properties.webnotesurl, {
-      method: "GET",
-      headers: awsRequestHeader,
-    });
-    if (!response.ok) {
-      throw response.statusText;
-    }
+    const response = await fetchPlus(properties.webnotesurl, "GET");
     const data = await response.json();
     setNotes(data.message);
   };
@@ -64,13 +59,7 @@ function NoteCrud() {
     setLoading(true);
     try {
       const param = id > 0 ? "?id=" + id : "";
-      const response = await fetch(properties.webnotesurl + param, {
-        method: "DELETE",
-        headers: awsRequestHeader,
-      });
-      if (!response.ok) {
-        throw response.statusText;
-      }
+      await fetchPlus(properties.webnotesurl, "DELETE", param);
       await loadNotes();
       setAlert({ message: "Deleted", show: true, type: "success" });
     } catch (e) {
@@ -83,13 +72,8 @@ function NoteCrud() {
   const createNote = async (text: string) => {
     setLoading(true);
     try {
-      const response = await fetch(properties.webnotesurl + "?text=" + text, {
-        method: "POST",
-        headers: awsRequestHeader,
-      });
-      if (!response.ok) {
-        throw response.statusText;
-      }
+      const param = "?text=" + text;
+      await fetchPlus(properties.webnotesurl, "POST", param);
       await loadNotes();
       setAlert({ message: "Created", show: true, type: "success" });
     } catch (e) {
@@ -102,16 +86,8 @@ function NoteCrud() {
   const updateNote = async (id: number, text: string) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        properties.webnotesurl + "?id=" + id + "&text=" + text,
-        {
-          method: "PATCH",
-          headers: awsRequestHeader,
-        }
-      );
-      if (!response.ok) {
-        throw response.statusText;
-      }
+      const param = "?id=" + id + "&text=" + text;
+      await fetchPlus(properties.webnotesurl, "PATCH", param);
       await loadNotes();
       setAlert({ message: "Updated", show: true, type: "success" });
     } catch (e) {
