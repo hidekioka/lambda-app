@@ -50,7 +50,7 @@ function NoteCrud() {
     }
   };
   const loadNotes = async () => {
-    let response: Response = await fetch(properties.webnotesurl + "load", {
+    let response: Response = await fetch(properties.webnotesurl, {
       method: "GET",
       headers: awsRequestHeader,
     });
@@ -64,8 +64,8 @@ function NoteCrud() {
     setLoading(true);
     try {
       const param = id > 0 ? "?id=" + id : "";
-      const response = await fetch(properties.webnotesurl + "delete" + param, {
-        method: "GET",
+      const response = await fetch(properties.webnotesurl + param, {
+        method: "DELETE",
         headers: awsRequestHeader,
       });
       if (!response.ok) {
@@ -83,13 +83,10 @@ function NoteCrud() {
   const createNote = async (text: string) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        properties.webnotesurl + "create?text=" + text,
-        {
-          method: "GET",
-          headers: awsRequestHeader,
-        }
-      );
+      const response = await fetch(properties.webnotesurl + "?text=" + text, {
+        method: "POST",
+        headers: awsRequestHeader,
+      });
       if (!response.ok) {
         throw response.statusText;
       }
@@ -106,9 +103,9 @@ function NoteCrud() {
     setLoading(true);
     try {
       const response = await fetch(
-        properties.webnotesurl + "update?id=" + id + "&text=" + text,
+        properties.webnotesurl + "?id=" + id + "&text=" + text,
         {
-          method: "GET",
+          method: "PATCH",
           headers: awsRequestHeader,
         }
       );

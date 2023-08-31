@@ -4,7 +4,6 @@ import { properties } from "../assets/properties.js";
 import secureLocalStorage from "react-secure-storage";
 
 function RequireAuth() {
-  console.log(secureLocalStorage.getItem("token"));
   if (secureLocalStorage.getItem("token") == null) {
     try {
       secureLocalStorage.setItem(

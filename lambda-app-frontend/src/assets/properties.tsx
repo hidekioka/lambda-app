@@ -1,5 +1,5 @@
 // const lambdaFunction: string = "/java-container-";
-const lambdaFunction: string = "/web-notes-";
+const lambdaFunction: string = "/web-notes";
 const clientId: string = "3toccem3hj82utofgcpojogp88";
 const responseType: string = "token";
 const redirectURI: string = "http://localhost:5173";
