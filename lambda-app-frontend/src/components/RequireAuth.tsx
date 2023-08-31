@@ -1,14 +1,22 @@
-import { useSearchParams } from "react-router-dom";
 import NoteCrud from "./NoteCrud.tsx";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { properties } from "../assets/properties.js";
+import secureLocalStorage from "react-secure-storage";
 
 function RequireAuth() {
-  const [authed, setAuthed] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
-  console.log(window.location.href.split("#")[1].split("&")[0].split("=")[1]);
+  console.log(secureLocalStorage.getItem("token"));
+  if (secureLocalStorage.getItem("token") == null) {
+    try {
+      secureLocalStorage.setItem(
+        "token",
+        window.location.href.split("#")[1].split("&")[0].split("=")[1]
+      );
+    } catch (error) {
+      secureLocalStorage.removeItem("token");
+    }
+  }
 
-  if (authed === false) {
+  if (secureLocalStorage.getItem("token") == null) {
     useEffect(() => {
       window.location.replace(properties.authURL);
     }, []);
