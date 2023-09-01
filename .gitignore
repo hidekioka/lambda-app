@@ -52,6 +52,5 @@ replay_pid*
 */.settings/*
 */target/*
 *.factorypath
-frontend/package-lock.json
-frontend/package.json
 .DS_Store
+*.iml

@@ -9,9 +9,6 @@ import secureLocalStorage from "react-secure-storage";
 import fetchPlus from "./Utils.tsx";
 
 function NoteCrud() {
-  let awsRequestHeader: HeadersInit = {
-    Authorization: secureLocalStorage.getItem("token") + "",
-  };
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState([]);
   const [alert, setAlert] = useState({
@@ -53,7 +50,7 @@ function NoteCrud() {
   const loadNotes = async () => {
     const response = await fetchPlus(properties.webnotesurl, "GET");
     const data = await response.json();
-    setNotes(data.message);
+    setNotes(JSON.parse(data.message));
   };
   const deleteNote = async (id: number) => {
     setLoading(true);

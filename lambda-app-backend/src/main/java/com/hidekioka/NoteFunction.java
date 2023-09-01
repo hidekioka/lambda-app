@@ -8,10 +8,15 @@ import com.hidekioka.component.NoteComponent;
 import com.hidekioka.exception.LambdaException;
 import com.hidekioka.service.NoteService;
 import com.hidekioka.util.LocalUtils;
+import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 
 public class NoteFunction {
+
+    private static final String APP_VERSION = "app-version";
+    private static final String MESSAGE = "message";
+    private static final String ERROR_MISSING_PARAM = "Missing parameter";
     NoteComponent noteComponent;
 
     public String hello() {
@@ -21,88 +26,82 @@ public class NoteFunction {
     public APIGatewayProxyResponseEvent create(final APIGatewayProxyRequestEvent input, final Context context) throws LambdaException {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
         try {
-            if (input == null || input.getQueryStringParameters() == null || input.getQueryStringParameters().get(
-                    "text") == null) {
-                throw new LambdaException("Missing parameter: text", null);
+            if (input == null || input.getQueryStringParameters() == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM);
             }
-            getNoteService().create(input.getQueryStringParameters().get("text"));
-            String body =
-
-                    String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + "\", \"message\": " +
-                            "\"" + "Created" + "\"}");
-
-            return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body);
+            String text = input.getQueryStringParameters().get("text");
+            if (text == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": text", null);
+            }
+            getService().create(text);
+            JSONObject body = new JSONObject();
+            body.put(APP_VERSION, LocalUtils.getApplicationVersion());
+            body.put(MESSAGE, "Created");
+            return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body.toString());
         } catch (LambdaException e) {
-            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
-            return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            return LocalUtils.buildErrorResponse(response, e);
         }
     }
 
     public APIGatewayProxyResponseEvent load(final APIGatewayProxyRequestEvent input, final Context context) {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
         try {
-            String functionReturnString = getNoteService().findAll();
-            String body =
-                    String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + ", \"message\": " + functionReturnString + "}");
-
-            return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
+            String functionReturnString = getService().findAll();
+            JSONObject body = new JSONObject();
+            body.put(APP_VERSION, LocalUtils.getApplicationVersion());
+            body.put(MESSAGE, functionReturnString);
+            return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body.toString());
         } catch (LambdaException e) {
-            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
-            return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            return LocalUtils.buildErrorResponse(response, e);
         }
     }
 
-    public APIGatewayProxyResponseEvent delete(final APIGatewayProxyRequestEvent input, final Context context) throws LambdaException {
+    public APIGatewayProxyResponseEvent delete(final APIGatewayProxyRequestEvent input, final Context context) {
         return remove(input, context);
     }
 
     public APIGatewayProxyResponseEvent remove(final APIGatewayProxyRequestEvent input, final Context context) {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
-        String selectedId = (input == null || input.getQueryStringParameters() == null) ? null :
-                input.getQueryStringParameters().get(
-                        "id");
-        LocalUtils.logWithClass(this.getClass().toString(), context.getLogger(), selectedId);
         try {
-            getNoteService().remove(selectedId);
-            String body =
-                    String.format("{ \"app-version\": " + LocalUtils.getApplicationVersion() + ", \"message\": \"" +
-                            "Removed" + "\"}");
-
-            return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
+            if (input == null || input.getQueryStringParameters() == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM);
+            }
+            String selectedId = input.getQueryStringParameters().get("id");
+            if (selectedId == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": id", null);
+            }
+            getService().remove(selectedId);
+            JSONObject body = new JSONObject();
+            body.put(APP_VERSION, LocalUtils.getApplicationVersion());
+            body.put(MESSAGE, "Removed");
+            return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body.toString());
         } catch (LambdaException e) {
-            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
-            return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            return LocalUtils.buildErrorResponse(response, e);
         }
     }
 
     public APIGatewayProxyResponseEvent update(final APIGatewayProxyRequestEvent input, final Context context) throws LambdaException {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
-        if (input == null || input.getQueryStringParameters() == null || input.getQueryStringParameters().get(
-                "text") == null) {
-            throw new LambdaException("Missing parameter: text", null);
-        }
-        String selectedId = (input == null || input.getQueryStringParameters() == null) ? null :
-                input.getQueryStringParameters().get(
-                        "id");
         try {
-            if (input == null || input.getQueryStringParameters() == null || input.getQueryStringParameters().get(
-                    "text") == null) {
-                throw new LambdaException("Missing parameter: text", null);
+            if (input == null || input.getQueryStringParameters() == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM);
             }
-            getNoteService().update(selectedId, input.getQueryStringParameters().get("text"));
-            String body =
-
-                    String.format("{ \"app-version\": \"" + LocalUtils.getApplicationVersion() + "\", \"message\": " +
-                            "\"" + "Created" + "\"}");
-
-            return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body);
+            String selectedId = input.getQueryStringParameters().get("id");
+            if (selectedId == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": id", null);
+            }
+            String text = input.getQueryStringParameters().get("text");
+            getService().update(selectedId, text);
+            JSONObject body = new JSONObject();
+            body.put(APP_VERSION, LocalUtils.getApplicationVersion());
+            body.put(MESSAGE, "Removed");
+            return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body.toString());
         } catch (LambdaException e) {
-            String body = String.format("{ \"message\": \"" + e.getMessage() + "\"}");
-            return response.withBody(body).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            return LocalUtils.buildErrorResponse(response, e);
         }
     }
 
-    private NoteService getNoteService() {
+    private NoteService getService() {
         if (noteComponent == null) {
             noteComponent = DaggerNoteComponent.create();
         }
