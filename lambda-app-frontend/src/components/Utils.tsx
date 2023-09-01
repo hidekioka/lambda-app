@@ -16,7 +16,7 @@ export default async function fetchPlus(
   });
   if (response.status == 401) {
     secureLocalStorage.removeItem("token");
-    window.location.replace(properties.authURL);
+    window.location.replace(properties.authPageURL);
   }
   if (!response.ok) {
     throw response.statusText;

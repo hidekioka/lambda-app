@@ -138,7 +138,7 @@ function NoteCrud() {
             <Button
               onClick={() => {
                 secureLocalStorage.removeItem("token");
-                window.location.replace(properties.authURL);
+                window.location.replace(properties.authPageURL);
               }}
               label="Logout"
             ></Button>
