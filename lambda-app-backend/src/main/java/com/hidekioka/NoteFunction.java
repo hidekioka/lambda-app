@@ -10,7 +10,12 @@ import com.hidekioka.service.NoteService;
 import com.hidekioka.util.LocalUtils;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class NoteFunction {
 
@@ -33,16 +38,17 @@ public class NoteFunction {
             if (text == null) {
                 throw new LambdaException(ERROR_MISSING_PARAM + ": text", null);
             }
-            String userEmail = input.getQueryStringParameters().get("userEmail");
-            if (userEmail == null) {
-                throw new LambdaException(ERROR_MISSING_PARAM + ": userEmail", null);
+            String token = input.getQueryStringParameters().get("token");
+            if (token == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": token", null);
             }
-            getService().create(text, userEmail);
+            getService().create(text, LocalUtils.getEmailFromToken(token));
             JSONObject body = new JSONObject();
             body.put(APP_VERSION, LocalUtils.getApplicationVersion());
             body.put(MESSAGE, "Created");
             return response.withStatusCode(HttpURLConnection.HTTP_CREATED).withBody(body.toString());
         } catch (LambdaException e) {
+            e.printStackTrace();
             return LocalUtils.buildErrorResponse(response, e);
         }
     }
@@ -53,16 +59,17 @@ public class NoteFunction {
             if (input == null || input.getQueryStringParameters() == null) {
                 throw new LambdaException(ERROR_MISSING_PARAM);
             }
-            String userEmail = input.getQueryStringParameters().get("userEmail");
-            if (userEmail == null) {
-                throw new LambdaException(ERROR_MISSING_PARAM + ": userEmail", null);
+            String token = input.getQueryStringParameters().get("token");
+            if (token == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": token", null);
             }
-            String functionReturnString = getService().findAll(userEmail);
+            String functionReturnString = getService().findAll(LocalUtils.getEmailFromToken(token));
             JSONObject body = new JSONObject();
             body.put(APP_VERSION, LocalUtils.getApplicationVersion());
             body.put(MESSAGE, functionReturnString);
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body.toString());
         } catch (LambdaException e) {
+            e.printStackTrace();
             return LocalUtils.buildErrorResponse(response, e);
         }
     }
@@ -81,12 +88,17 @@ public class NoteFunction {
             if (selectedId == null) {
                 throw new LambdaException(ERROR_MISSING_PARAM + ": id", null);
             }
+            String token = input.getQueryStringParameters().get("token");
+            if (token == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": token", null);
+            }
             getService().remove(selectedId);
             JSONObject body = new JSONObject();
             body.put(APP_VERSION, LocalUtils.getApplicationVersion());
             body.put(MESSAGE, "Removed");
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body.toString());
         } catch (LambdaException e) {
+            e.printStackTrace();
             return LocalUtils.buildErrorResponse(response, e);
         }
     }
@@ -101,6 +113,10 @@ public class NoteFunction {
             if (selectedId == null) {
                 throw new LambdaException(ERROR_MISSING_PARAM + ": id", null);
             }
+            String token = input.getQueryStringParameters().get("token");
+            if (token == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": token", null);
+            }
             String text = input.getQueryStringParameters().get("text");
             getService().update(selectedId, text);
             JSONObject body = new JSONObject();
@@ -108,6 +124,7 @@ public class NoteFunction {
             body.put(MESSAGE, "Removed");
             return response.withStatusCode(HttpURLConnection.HTTP_OK).withBody(body.toString());
         } catch (LambdaException e) {
+            e.printStackTrace();
             return LocalUtils.buildErrorResponse(response, e);
         }
     }

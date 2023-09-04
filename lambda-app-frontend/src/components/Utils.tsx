@@ -16,7 +16,7 @@ export default async function fetchPlus(
   });
   if (response.status == 401) {
     secureLocalStorage.removeItem("token");
-    secureLocalStorage.removeItem("userEmail");
+    secureLocalStorage.removeItem("accesToken");
     window.location.replace(properties.authPageURL);
   }
   if (!response.ok) {

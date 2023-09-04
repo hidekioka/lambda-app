@@ -4,7 +4,7 @@ const redirectURI: string = "http://localhost:5173";
 
 // COGNITO address
 const awsCognitoURL: string =
-  "https://web-notes.auth.sa-east-1.amazoncognito.com/";
+  "https://lambda-notes.auth.sa-east-1.amazoncognito.com/";
 
 // REST API
 const functionURL: string =

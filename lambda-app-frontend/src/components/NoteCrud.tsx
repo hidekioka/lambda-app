@@ -48,9 +48,9 @@ function NoteCrud() {
     }
   };
   const loadNotes = async () => {
-    const userEmail = secureLocalStorage.getItem("userEmail");
+    const token = secureLocalStorage.getItem("accessToken");
     const response = await fetchPlus(
-      properties.webnotesurl + "?userEmail=" + userEmail,
+      properties.webnotesurl + "?token=" + token,
       "GET"
     );
     const data = await response.json();
@@ -59,8 +59,12 @@ function NoteCrud() {
   const deleteNote = async (id: number) => {
     setLoading(true);
     try {
-      const param = id > 0 ? "?id=" + id : "";
-      await fetchPlus(properties.webnotesurl, "DELETE", param);
+      const token = secureLocalStorage.getItem("accessToken");
+      const paramId = id > 0 ? "?id=" + id : "";
+      await fetchPlus(
+        properties.webnotesurl + paramId + "&token=" + token,
+        "DELETE"
+      );
       await loadNotes();
       setAlert({ message: "Deleted", show: true, type: "success" });
     } catch (e) {
@@ -73,8 +77,8 @@ function NoteCrud() {
   const createNote = async (text: string) => {
     setLoading(true);
     try {
-      const userEmail = secureLocalStorage.getItem("userEmail");
-      const param = "?text=" + text + "&userEmail=" + userEmail;
+      const token = secureLocalStorage.getItem("accessToken");
+      const param = "?text=" + text + "&token=" + token;
       await fetchPlus(properties.webnotesurl, "POST", param);
       await loadNotes();
       setAlert({ message: "Created", show: true, type: "success" });
@@ -88,7 +92,8 @@ function NoteCrud() {
   const updateNote = async (id: number, text: string) => {
     setLoading(true);
     try {
-      const param = "?id=" + id + "&text=" + text;
+      const token = secureLocalStorage.getItem("accessToken");
+      const param = "?id=" + id + "&text=" + text + "&token=" + token;
       await fetchPlus(properties.webnotesurl, "PATCH", param);
       await loadNotes();
       setAlert({ message: "Updated", show: true, type: "success" });
@@ -143,7 +148,7 @@ function NoteCrud() {
             <Button
               onClick={() => {
                 secureLocalStorage.removeItem("token");
-                secureLocalStorage.removeItem("userEmail");
+                secureLocalStorage.removeItem("accesToken");
                 window.location.replace(properties.authPageURL);
               }}
               label="Logout"

@@ -2,11 +2,16 @@ package com.hidekioka.util;
 
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hidekioka.exception.LambdaException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +50,32 @@ public class LocalUtils {
         return "[" + version + "] " + LINE_BREAK + text;
     }
 
+    public static String getEmailFromToken(String token) throws LambdaException {
+        try {
+            URL url = new URL("https://lambda-notes.auth.sa-east-1.amazoncognito.com/oauth2/userInfo");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+            conn.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String output;
+
+            StringBuffer response = new StringBuffer();
+            while ((output = in.readLine()) != null) {
+                response.append(output);
+            }
+
+            in.close();
+            Map<String, Object> outputMap = new ObjectMapper().readValue(response.toString(),
+                    new TypeReference<Map<String, Object>>() {
+                    });
+            return outputMap.get("email").toString();
+        } catch (Exception e) {
+            throw new LambdaException("Error validating token", e);
+        }
+    }
+
+
     public static APIGatewayProxyResponseEvent buildResponse() {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -59,34 +90,12 @@ public class LocalUtils {
         return response;
     }
 
-    public static APIGatewayProxyResponseEvent buildErrorResponse(APIGatewayProxyResponseEvent response, Exception e) {
+    public static APIGatewayProxyResponseEvent buildErrorResponse(APIGatewayProxyResponseEvent response, Exception
+            e) {
         JSONObject body = new JSONObject();
         body.append("app-version", LocalUtils.getApplicationVersion());
         body.append("message", e.getMessage());
         return response.withBody(body.toString()).withStatusCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-    }
-
-    public static void removeDB(String table) throws LambdaException {
-        removeDB(table, "1=1");
-    }
-
-    public static void removeDB(String table, String whereClause) throws LambdaException {
-        Connection con = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        try {
-            con = LocalUtils.connect();
-            stmt = con.createStatement();
-            String deleteClause = "delete from " + table + " where " + whereClause;
-            stmt.executeUpdate(deleteClause);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new LambdaException(e.getMessage(), e);
-        } finally {
-            LocalUtils.closeQuietly(rs);
-            LocalUtils.closeQuietly(stmt);
-            LocalUtils.closeQuietly(con);
-        }
     }
 
     public static Connection connect() throws SQLException {
@@ -103,7 +112,8 @@ public class LocalUtils {
         return findAllDB(table, null);
     }
 
-    public static List<Map<String, Object>> findAllDB(String table, Map.Entry<String, Object> whereParam) throws LambdaException {
+    public static List<Map<String, Object>> findAllDB(String table, Map.Entry<String, Object> whereParam) throws
+            LambdaException {
         List<Map<String, Object>> resultList = new ArrayList<>();
         Connection con = null;
         PreparedStatement stmt = null;
@@ -129,7 +139,6 @@ public class LocalUtils {
                 resultList.add(row);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new LambdaException(e.getMessage(), e);
         } finally {
             LocalUtils.closeQuietly(rs);
@@ -146,10 +155,9 @@ public class LocalUtils {
         try {
             con = LocalUtils.connect();
             String keys = params.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.joining(","));
-//			String values = params.entrySet().stream().map(a -> "'" + a.getValue().toString() + "'")
-//					.collect(Collectors.joining(","));
             String questionMarks = params.entrySet().stream().map(a -> "?").collect(Collectors.joining(","));
-            stmt = con.prepareStatement("insert into " + table + " ( " + keys + " ) values (" + questionMarks + ")");
+            stmt = con.prepareStatement("insert into " + table + " ( " + keys + " ) values (" + questionMarks +
+                    ")");
             int count = 1;
             for (Object value : params.values()) {
                 stmt.setString(count, value.toString());
@@ -163,7 +171,28 @@ public class LocalUtils {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new LambdaException(e.getMessage(), e);
+        } finally {
+            LocalUtils.closeQuietly(rs);
+            LocalUtils.closeQuietly(stmt);
+            LocalUtils.closeQuietly(con);
+        }
+    }
+
+    public static void removeDB(String table) throws LambdaException {
+        removeDB(table, "1=1");
+    }
+
+    public static void removeDB(String table, String whereClause) throws LambdaException {
+        Connection con = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            con = LocalUtils.connect();
+            stmt = con.createStatement();
+            String deleteClause = "delete from " + table + " where " + whereClause;
+            stmt.executeUpdate(deleteClause);
+        } catch (SQLException e) {
             throw new LambdaException(e.getMessage(), e);
         } finally {
             LocalUtils.closeQuietly(rs);
@@ -180,11 +209,11 @@ public class LocalUtils {
         try {
             con = LocalUtils.connect();
             stmt = con.createStatement();
-            String updateClause = "update " + table + " set " + param.getKey() + " = '" + param.getValue() + "' where"
+            String updateClause = "update " + table + " set " + param.getKey() + " = '" + param.getValue() + "' " +
+                    "where"
                     + " " + whereClause;
             stmt.executeUpdate(updateClause);
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new LambdaException(e.getMessage(), e);
         } finally {
             LocalUtils.closeQuietly(rs);
