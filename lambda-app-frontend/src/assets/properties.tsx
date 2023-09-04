@@ -30,12 +30,5 @@ export const properties = {
     responseType +
     "&redirect_uri=" +
     redirectURI,
-  authAPIURL:
-    awsCognitoURL +
-    "login?client_id=" +
-    clientId +
-    "&response_type=" +
-    responseType +
-    "&redirect_uri=" +
-    redirectURI,
+  authAPIURL: awsCognitoURL + "/oauth2/userInfo",
 };
