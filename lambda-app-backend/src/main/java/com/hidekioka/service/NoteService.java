@@ -27,8 +27,10 @@ public class NoteService {
     	// Injected Service
     }
 
-    public String findAll() throws LambdaException {
-        List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME);
+    public String findAll(String userEmail) throws LambdaException {
+        Map.Entry<String,Object> whereParam =
+                new AbstractMap.SimpleEntry<String, Object>("email", userEmail);
+        List<Map<String, Object>> resultList = LocalUtils.findAllDB(TABLE_NAME, whereParam);
         JSONArray jsonArray = new JSONArray();
         for (Map<String, Object> it : resultList) {
             jsonArray.put(it);
@@ -36,12 +38,10 @@ public class NoteService {
         return jsonArray.toString();
     }
 
-    public void create(String text) throws LambdaException {
+    public void create(String text, String email) throws LambdaException {
         Map<String, Object> map = new HashMap<>();
-        if (text == null || text.isBlank()) {
-            text = "random Note at time: " + new SimpleDateFormat(DATE_PATTERN).format(new Date());
-        }
         map.put("text", text);
+        map.put("email", email);
         LocalUtils.insertDB(TABLE_NAME, map);
     }
 

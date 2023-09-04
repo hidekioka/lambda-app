@@ -33,7 +33,11 @@ public class NoteFunction {
             if (text == null) {
                 throw new LambdaException(ERROR_MISSING_PARAM + ": text", null);
             }
-            getService().create(text);
+            String userEmail = input.getQueryStringParameters().get("userEmail");
+            if (userEmail == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": userEmail", null);
+            }
+            getService().create(text, userEmail);
             JSONObject body = new JSONObject();
             body.put(APP_VERSION, LocalUtils.getApplicationVersion());
             body.put(MESSAGE, "Created");
@@ -46,7 +50,14 @@ public class NoteFunction {
     public APIGatewayProxyResponseEvent load(final APIGatewayProxyRequestEvent input, final Context context) {
         APIGatewayProxyResponseEvent response = LocalUtils.buildResponse();
         try {
-            String functionReturnString = getService().findAll();
+            if (input == null || input.getQueryStringParameters() == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM);
+            }
+            String userEmail = input.getQueryStringParameters().get("userEmail");
+            if (userEmail == null) {
+                throw new LambdaException(ERROR_MISSING_PARAM + ": userEmail", null);
+            }
+            String functionReturnString = getService().findAll(userEmail);
             JSONObject body = new JSONObject();
             body.put(APP_VERSION, LocalUtils.getApplicationVersion());
             body.put(MESSAGE, functionReturnString);

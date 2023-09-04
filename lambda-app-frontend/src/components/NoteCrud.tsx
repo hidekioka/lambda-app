@@ -48,7 +48,11 @@ function NoteCrud() {
     }
   };
   const loadNotes = async () => {
-    const response = await fetchPlus(properties.webnotesurl, "GET");
+    const userEmail = secureLocalStorage.getItem("userEmail");
+    const response = await fetchPlus(
+      properties.webnotesurl + "?userEmail=" + userEmail,
+      "GET"
+    );
     const data = await response.json();
     setNotes(JSON.parse(data.message));
   };
@@ -69,7 +73,8 @@ function NoteCrud() {
   const createNote = async (text: string) => {
     setLoading(true);
     try {
-      const param = "?text=" + text;
+      const userEmail = secureLocalStorage.getItem("userEmail");
+      const param = "?text=" + text + "&userEmail=" + userEmail;
       await fetchPlus(properties.webnotesurl, "POST", param);
       await loadNotes();
       setAlert({ message: "Created", show: true, type: "success" });
@@ -138,6 +143,7 @@ function NoteCrud() {
             <Button
               onClick={() => {
                 secureLocalStorage.removeItem("token");
+                secureLocalStorage.removeItem("userEmail");
                 window.location.replace(properties.authPageURL);
               }}
               label="Logout"

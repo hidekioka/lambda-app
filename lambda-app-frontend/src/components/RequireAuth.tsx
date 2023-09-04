@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { properties } from "../assets/properties.js";
 import secureLocalStorage from "react-secure-storage";
 
+
 function RequireAuth() {
   if (secureLocalStorage.getItem("token") == null) {
     try {
@@ -24,6 +25,7 @@ function RequireAuth() {
         .then((data) => secureLocalStorage.setItem("userEmail", data.email));
     } catch (error) {
       secureLocalStorage.removeItem("token");
+      secureLocalStorage.removeItem("userEmail");
     }
   }
 
