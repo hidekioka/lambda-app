@@ -1,6 +1,7 @@
 const clientId: string = "3toccem3hj82utofgcpojogp88";
 const responseType: string = "token";
-const redirectURI: string = "http://localhost:5173";
+// const redirectURI: string = "http://localhost:5173";
+const redirectURI: string = "https://lambda-app-lb-541658196.sa-east-1.elb.amazonaws.com";
 
 // COGNITO address
 const awsCognitoURL: string =

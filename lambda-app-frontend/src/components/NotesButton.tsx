@@ -1,5 +1,3 @@
-import React from "react";
-
 interface Props {
   label: string;
   color?: "primary" | "outline-primary" | "secondary"; // ? means optional, the type are supported values, as not any string is available
